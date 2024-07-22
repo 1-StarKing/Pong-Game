@@ -9,7 +9,6 @@ module.exports = {
     "plugin:import/warnings",
     "plugin:import/typescript",
     "plugin:jsx-a11y/recommended",
-    "plugin:react/recommended",
   ],
 
   plugins: ["react"],
@@ -31,9 +30,6 @@ module.exports = {
   },
 
   rules: {
-    // Custom rules
-    "react/jsx-uses-react": "error",
-    "react/jsx-uses-vars": "error",
-    "no-unused-vars": ["error", { varsIgnorePattern: "^h$" }],
+    "@typescript-eslint/no-unused-vars": ["error", { "varsIgnorePattern": "React|render|screen|App" }],
   },
 };
