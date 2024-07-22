@@ -30,6 +30,10 @@ module.exports = {
   },
 
   rules: {
-    "@typescript-eslint/no-unused-vars": ["error", { "varsIgnorePattern": "React|render|screen|App" }],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { varsIgnorePattern: "React|render|screen|App" },
+    ],
+    "react/no-unknown-property": [2, { ignore: ["jsx"] }],
   },
 };
