@@ -34,6 +34,7 @@ module.exports = {
       "error",
       { varsIgnorePattern: "React|render|screen|App" },
     ],
-    "react/no-unknown-property": [2, { ignore: ["jsx"] }],
+    //    "react/no-unknown-property": [2, { ignore: ["jsx"] }],
+    "react/no-unknown-property": ["off", { ignore: ["JSX"] }],
   },
 };
