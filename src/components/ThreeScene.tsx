@@ -11,6 +11,7 @@ const ThreeScene: React.FC = () => {
         left: 0,
         width: "100vw",
         height: "100vh",
+        zIndex: -1,
       }}
       camera={{ position: [0, 0, 5] }}
     >

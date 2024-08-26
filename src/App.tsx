@@ -5,12 +5,13 @@ import useWebSocket from "./hooks/useWebSocket";
 
 function App() {
   const { sendMessage } = useWebSocket("ws://localhost:8080");
+  const sendMessageTest = () => {
+    sendMessage("Hello WebSocket!");
+  };
   return (
     <div className="App">
       <ThreeScene />
-      <button onClick={() => sendMessage("Hello WebSocket!")}>
-        Send Message
-      </button>
+      <button onClick={sendMessageTest}>Send Message</button>
     </div>
   );
 }
