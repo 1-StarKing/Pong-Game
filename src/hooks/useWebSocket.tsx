@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+
 const useWebSocket = (url: string) => {
   const ws = useRef<WebSocket | null>(null);
   useEffect(() => {
@@ -10,11 +11,14 @@ const useWebSocket = (url: string) => {
       ws.current?.close();
     };
   }, [url]);
-  const sendMessage = (message: string) => {
+  const createRoom = (roomName: string, playerName: string) => {
+    const data = { roomName, playerName, type: "createRoom" };
+
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(message);
+      ws.current.send(JSON.stringify(data));
     }
   };
-  return { sendMessage };
+  return { createRoom };
 };
+
 export default useWebSocket;
