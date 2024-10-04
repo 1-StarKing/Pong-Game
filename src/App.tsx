@@ -1,18 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
-import CreateRoom from "./components/CreateRoomForm";
+import RoomForm from "./components/RoomForm";
 import ThreeScene from "./components/ThreeScene";
 import Lobby from "./components/Lobby";
 
 function App() {
+  const [isCreateRoom, setIsCreateRoom] = useState("");
   const showJoinOrCreateRoom = (joinOrCreateRoom: string): void => {
-    console.log(joinOrCreateRoom);
+    setIsCreateRoom(joinOrCreateRoom);
   };
   return (
     <div className="App">
       <ThreeScene />
       <Lobby updateJoinOrCreateRoom={showJoinOrCreateRoom} />
-      <CreateRoom />
+      <RoomForm isCreateRoom={isCreateRoom} />
     </div>
   );
 }

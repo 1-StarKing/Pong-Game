@@ -1,23 +1,33 @@
 import React, { useState } from "react";
 import useWebSocket from "../hooks/useWebSocket";
+interface RoomFormParams {
+  isCreateRoom: string;
+}
 
-const CreateRoom = () => {
+const RoomForm = ({ isCreateRoom }: RoomFormParams) => {
   const [roomName, setRoomName] = useState("");
   const [playerName, setPlayerName] = useState("");
 
+  const title = isCreateRoom === "create" ? "Create" : "Join";
+
   const { createRoom } = useWebSocket("ws://localhost:8080");
 
-  const handleCreateRoom = () => {
-    if (roomName && playerName) {
+  const handleRoomSubmit = () => {
+    if (!roomName || !playerName)
+      return alert("Please fill in both room name and player name.");
+
+    if (isCreateRoom === "create") {
       createRoom(roomName, playerName);
     } else {
-      alert("Please fill in both room name and player name.");
+      //      joinRoom(roomName, playerName);
     }
   };
 
+  if (isCreateRoom === "") return <></>;
+
   return (
     <div>
-      <h2>Create a Room</h2>
+      <h2>{title} a Room</h2>
       <input
         type="text"
         placeholder="Room Name"
@@ -30,9 +40,9 @@ const CreateRoom = () => {
         value={playerName}
         onChange={(e) => setPlayerName(e.target.value)}
       />
-      <button onClick={handleCreateRoom}>Create Room</button>
+      <button onClick={handleRoomSubmit}>{title} Room</button>
     </div>
   );
 };
 
-export default CreateRoom;
+export default RoomForm;
