@@ -6,6 +6,15 @@ const useWebSocket = (url: string) => {
     ws.current = new WebSocket(url);
     ws.current.onopen = () => console.log("WebSocket connected");
     ws.current.onclose = () => console.log("WebSocket disconnected");
+    ws.current.onmessage = (message) => {
+      const createdRoom = JSON.parse(message.data);
+      window.history.replaceState(
+        null,
+        "New Room Created",
+        `/room/${createdRoom.roomName}`
+      );
+      alert(createdRoom.message);
+    };
 
     return () => {
       ws.current?.close();

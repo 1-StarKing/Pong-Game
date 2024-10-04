@@ -10,7 +10,6 @@ const CreateRoom = () => {
   const handleCreateRoom = () => {
     if (roomName && playerName) {
       createRoom(roomName, playerName);
-      console.log(`Room Created: ${roomName}, Player: ${playerName}`);
     } else {
       alert("Please fill in both room name and player name.");
     }

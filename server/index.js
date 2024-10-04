@@ -9,13 +9,18 @@ wss.on("connection", (ws) => {
   console.log("connected");
 
   ws.on("message", (message) => {
-    let { type, roomName, playerName } = JSON.parse(message);
+    const { type, roomName, playerName } = JSON.parse(message);
 
     if (type === "createRoom" && !rooms.hasOwnProperty(ws)) {
-      assignedRoom = `room-${Object.keys(rooms).length + 1}`;
+      assignedRoom = roomName.replace(" ", "-");
       rooms[assignedRoom] = [ws];
       rooms[assignedRoom]["roomName"] = roomName;
       rooms[assignedRoom]["players"] = [playerName];
+      const createRoomResponse = {
+        message: `Welcome to Pong Game WebSocket server, you are in room ${assignedRoom}`,
+        roomName: roomName,
+      };
+      ws.send(JSON.stringify(createRoomResponse));
     }
 
     // Assign player to a room
@@ -26,11 +31,6 @@ wss.on("connection", (ws) => {
     //     break;
     //   }
     // }
-
-    ws.send(
-      `Welcome to Pong Game WebSocket server, you are in ${assignedRoom}`
-    );
-    console.log(rooms);
 
     // Broadcast to the other player in the same room
     rooms[assignedRoom].forEach((client) => {
