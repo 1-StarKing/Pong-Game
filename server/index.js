@@ -1,5 +1,6 @@
 /*
-  empty object caused issue - room not being created
+  getting both validation messages after creating room
+  create/join local state not working well between lobby and app components - see error in console
 */
 
 const WebSocket = require("ws");
@@ -17,21 +18,29 @@ wss.on("connection", (ws) => {
 
     assignedRoom = roomName.replace(" ", "-");
 
+    const roomResponse = {
+      message: ``,
+      roomName: roomName,
+    };
+
+    if (!rooms[assignedRoom] && type === "joinRoom") {
+      roomResponse.message = `Room doesn't exist`;
+      return ws.send(JSON.stringify(roomResponse));
+    }
+
     if (
       rooms[assignedRoom] &&
       type === "createRoom" &&
       rooms[assignedRoom].roomName !== assignedRoom
     ) {
       rooms[assignedRoom]["sockets"] = [ws];
-      rooms[assignedRoom]["roomName"] = roomName;
+      rooms[assignedRoom]["roomName"] = assignedRoom;
       rooms[assignedRoom]["players"] = [playerName];
-      const createRoomResponse = {
-        message: `Welcome to Pong Game WebSocket server, you are in room ${assignedRoom}`,
-        roomName: roomName,
-      };
-      ws.send(JSON.stringify(createRoomResponse));
+      roomResponse.message = `Welcome to Pong Game WebSocket server, you are in room ${assignedRoom}`;
+      ws.send(JSON.stringify(roomResponse));
     } else {
-      ws.send("Room already exists");
+      roomResponse.message = `Room already exists`;
+      ws.send(JSON.stringify(roomResponse));
     }
     console.log(rooms);
     if (
@@ -40,16 +49,13 @@ wss.on("connection", (ws) => {
       rooms[assignedRoom].roomName === assignedRoom &&
       rooms[assignedRoom].players.length < 2
     ) {
-      assignedRoom = roomName.replace(" ", "-");
       rooms[assignedRoom]["sockets"].push(ws);
       rooms[assignedRoom]["players"].push(playerName);
-      const createRoomResponse = {
-        message: `Welcome to Pong Game WebSocket server, you joined room ${assignedRoom}`,
-        roomName: roomName,
-      };
-      ws.send(JSON.stringify(createRoomResponse));
+      roomResponse.message = `Welcome to Pong Game WebSocket server, you joined room ${assignedRoom}`;
+      ws.send(JSON.stringify(roomResponse));
     } else {
-      ws.send("Room already full");
+      roomResponse.message = `Room already full`;
+      ws.send(JSON.stringify(roomResponse));
     }
 
     // Assign player to a room
