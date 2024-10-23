@@ -1,3 +1,7 @@
+/*
+  empty object caused issue - room not being created
+*/
+
 const WebSocket = require("ws");
 const wss = new WebSocket.Server({ port: 8080 });
 
@@ -11,9 +15,14 @@ wss.on("connection", (ws) => {
   ws.on("message", (message) => {
     const { type, roomName, playerName } = JSON.parse(message);
 
-    if (type === "createRoom" && !rooms.hasOwnProperty(ws)) {
-      assignedRoom = roomName.replace(" ", "-");
-      rooms[assignedRoom] = [ws];
+    assignedRoom = roomName.replace(" ", "-");
+
+    if (
+      rooms[assignedRoom] &&
+      type === "createRoom" &&
+      rooms[assignedRoom].roomName !== assignedRoom
+    ) {
+      rooms[assignedRoom]["sockets"] = [ws];
       rooms[assignedRoom]["roomName"] = roomName;
       rooms[assignedRoom]["players"] = [playerName];
       const createRoomResponse = {
@@ -21,6 +30,26 @@ wss.on("connection", (ws) => {
         roomName: roomName,
       };
       ws.send(JSON.stringify(createRoomResponse));
+    } else {
+      ws.send("Room already exists");
+    }
+    console.log(rooms);
+    if (
+      rooms[assignedRoom] &&
+      type === "joinRoom" &&
+      rooms[assignedRoom].roomName === assignedRoom &&
+      rooms[assignedRoom].players.length < 2
+    ) {
+      assignedRoom = roomName.replace(" ", "-");
+      rooms[assignedRoom]["sockets"].push(ws);
+      rooms[assignedRoom]["players"].push(playerName);
+      const createRoomResponse = {
+        message: `Welcome to Pong Game WebSocket server, you joined room ${assignedRoom}`,
+        roomName: roomName,
+      };
+      ws.send(JSON.stringify(createRoomResponse));
+    } else {
+      ws.send("Room already full");
     }
 
     // Assign player to a room
@@ -33,11 +62,14 @@ wss.on("connection", (ws) => {
     // }
 
     // Broadcast to the other player in the same room
-    rooms[assignedRoom].forEach((client) => {
-      if (client !== ws && client.readyState === WebSocket.OPEN) {
-        client.send(message);
-      }
-    });
+
+    if (rooms[assignedRoom]) {
+      rooms[assignedRoom].sockets.forEach((client) => {
+        if (client !== ws && client.readyState === WebSocket.OPEN) {
+          client.send(message);
+        }
+      });
+    }
   });
 
   ws.on("close", () => {

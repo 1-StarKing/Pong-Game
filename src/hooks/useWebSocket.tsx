@@ -27,7 +27,14 @@ const useWebSocket = (url: string) => {
       ws.current.send(JSON.stringify(data));
     }
   };
-  return { createRoom };
+  const joinRoom = (roomName: string, playerName: string) => {
+    const data = { roomName, playerName, type: "joinRoom" };
+
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      ws.current.send(JSON.stringify(data));
+    }
+  };
+  return { createRoom, joinRoom };
 };
 
 export default useWebSocket;

@@ -10,7 +10,7 @@ const RoomForm = ({ isCreateRoom }: RoomFormParams) => {
 
   const title = isCreateRoom === "create" ? "Create" : "Join";
 
-  const { createRoom } = useWebSocket("ws://localhost:8080");
+  const { createRoom, joinRoom } = useWebSocket("ws://localhost:8080");
 
   const handleRoomSubmit = () => {
     if (!roomName || !playerName)
@@ -19,7 +19,7 @@ const RoomForm = ({ isCreateRoom }: RoomFormParams) => {
     if (isCreateRoom === "create") {
       createRoom(roomName, playerName);
     } else {
-      //      joinRoom(roomName, playerName);
+      joinRoom(roomName, playerName);
     }
   };
 
