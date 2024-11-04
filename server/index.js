@@ -1,8 +1,3 @@
-/*
-  getting both validation messages after creating room
-  create/join local state not working well between lobby and app components - see error in console
-*/
-
 const WebSocket = require("ws");
 const wss = new WebSocket.Server({ port: 8080 });
 
@@ -28,47 +23,37 @@ wss.on("connection", (ws) => {
       return ws.send(JSON.stringify(roomResponse));
     }
 
-    if (
-      rooms[assignedRoom] &&
-      type === "createRoom" &&
-      rooms[assignedRoom].roomName !== assignedRoom
-    ) {
-      rooms[assignedRoom]["sockets"] = [ws];
-      rooms[assignedRoom]["roomName"] = assignedRoom;
-      rooms[assignedRoom]["players"] = [playerName];
-      roomResponse.message = `Welcome to Pong Game WebSocket server, you are in room ${assignedRoom}`;
-      ws.send(JSON.stringify(roomResponse));
-    } else {
-      roomResponse.message = `Room already exists`;
-      ws.send(JSON.stringify(roomResponse));
-    }
-    console.log(rooms);
-    if (
-      rooms[assignedRoom] &&
-      type === "joinRoom" &&
-      rooms[assignedRoom].roomName === assignedRoom &&
-      rooms[assignedRoom].players.length < 2
-    ) {
-      rooms[assignedRoom]["sockets"].push(ws);
-      rooms[assignedRoom]["players"].push(playerName);
-      roomResponse.message = `Welcome to Pong Game WebSocket server, you joined room ${assignedRoom}`;
-      ws.send(JSON.stringify(roomResponse));
-    } else {
-      roomResponse.message = `Room already full`;
-      ws.send(JSON.stringify(roomResponse));
+    if (type === "createRoom") {
+      if (!rooms[assignedRoom]) {
+        rooms[assignedRoom] = {};
+        rooms[assignedRoom]["sockets"] = [ws];
+        rooms[assignedRoom]["roomName"] = assignedRoom;
+        rooms[assignedRoom]["players"] = [playerName];
+        roomResponse.message = `Welcome to Pong Game WebSocket server, you are in room ${assignedRoom}`;
+        ws.send(JSON.stringify(roomResponse));
+      } else {
+        roomResponse.message = `Room already exists`;
+        ws.send(JSON.stringify(roomResponse));
+      }
     }
 
-    // Assign player to a room
-    // for (const roomId in rooms) {
-    //   if (rooms[roomId].length < 2) {
-    //     rooms[roomId].push(ws);
-    //     assignedRoom = roomId;
-    //     break;
-    //   }
-    // }
+    if (type === "joinRoom") {
+      if (
+        rooms[assignedRoom] &&
+        rooms[assignedRoom].roomName === assignedRoom &&
+        rooms[assignedRoom].players.length < 2
+      ) {
+        rooms[assignedRoom]["sockets"].push(ws);
+        rooms[assignedRoom]["players"].push(playerName);
+        roomResponse.message = `Welcome to Pong Game WebSocket server, you joined room ${assignedRoom}`;
+        ws.send(JSON.stringify(roomResponse));
+      } else {
+        roomResponse.message = `Room already full`;
+        ws.send(JSON.stringify(roomResponse));
+      }
+    }
 
     // Broadcast to the other player in the same room
-
     if (rooms[assignedRoom]) {
       rooms[assignedRoom].sockets.forEach((client) => {
         if (client !== ws && client.readyState === WebSocket.OPEN) {
