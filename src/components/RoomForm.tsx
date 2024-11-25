@@ -10,7 +10,10 @@ const RoomForm = ({ isCreateRoom }: RoomFormParams) => {
 
   const title = isCreateRoom === "create" ? "Create" : "Join";
 
-  const { createRoom, joinRoom } = useWebSocket("ws://localhost:8080");
+  //Pass a new param to UseWebSocket that will update the useEffect dependency array
+  const { createRoom, joinRoom, getMsgData } = useWebSocket(
+    "ws://localhost:8080"
+  );
 
   const handleRoomSubmit = () => {
     if (!roomName || !playerName)
@@ -21,6 +24,8 @@ const RoomForm = ({ isCreateRoom }: RoomFormParams) => {
     } else {
       joinRoom(roomName, playerName);
     }
+
+    console.log(3, getMsgData());
   };
 
   if (isCreateRoom === "") return <></>;

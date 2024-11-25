@@ -1,19 +1,32 @@
-import { useEffect, useRef } from "react";
+/*
+  console log returning null
+*/
+
+import { useEffect, useRef, useState } from "react";
 
 const useWebSocket = (url: string) => {
   const ws = useRef<WebSocket | null>(null);
+  const [message, setMessage] = useState(null);
+
   useEffect(() => {
     ws.current = new WebSocket(url);
     ws.current.onopen = () => console.log("WebSocket connected");
     ws.current.onclose = () => console.log("WebSocket disconnected");
     ws.current.onmessage = (message) => {
-      const createdRoom = JSON.parse(message.data);
-      window.history.replaceState(
-        null,
-        "New Room Created",
-        `/room/${createdRoom.roomName}`
-      );
-      alert(createdRoom.message);
+      const msgData = JSON.parse(message.data);
+
+      setMessage(msgData);
+
+      console.log(1, msgData);
+
+      if (msgData.type && msgData.type === "createRoom") {
+        window.history.replaceState(
+          null,
+          "New Room Created",
+          `/room/${msgData.roomName}`
+        );
+        alert(msgData.message);
+      }
     };
 
     return () => {
@@ -34,7 +47,13 @@ const useWebSocket = (url: string) => {
       ws.current.send(JSON.stringify(data));
     }
   };
-  return { createRoom, joinRoom };
+
+  const getMsgData = () => {
+    console.log(2, message);
+    return message;
+  };
+
+  return { createRoom, joinRoom, getMsgData };
 };
 
 export default useWebSocket;

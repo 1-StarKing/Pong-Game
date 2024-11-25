@@ -15,7 +15,8 @@ wss.on("connection", (ws) => {
 
     const roomResponse = {
       message: ``,
-      roomName: roomName,
+      roomName: roomName, //could be just "roomName,"
+      type,
     };
 
     if (!rooms[assignedRoom] && type === "joinRoom") {
