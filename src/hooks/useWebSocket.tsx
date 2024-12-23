@@ -1,12 +1,8 @@
-/*
-  console log returning null
-*/
-
 import { useEffect, useRef, useState } from "react";
 
 const useWebSocket = (url: string) => {
   const ws = useRef<WebSocket | null>(null);
-  const [message, setMessage] = useState(null);
+  const [messageState, setMessageState] = useState(null);
 
   useEffect(() => {
     ws.current = new WebSocket(url);
@@ -14,25 +10,34 @@ const useWebSocket = (url: string) => {
     ws.current.onclose = () => console.log("WebSocket disconnected");
     ws.current.onmessage = (message) => {
       const msgData = JSON.parse(message.data);
+      setMessageState(msgData);
 
-      setMessage(msgData);
-
-      console.log(1, msgData);
-
+      // move this to the RoomForm component ???
       if (msgData.type && msgData.type === "createRoom") {
         window.history.replaceState(
           null,
           "New Room Created",
           `/room/${msgData.roomName}`
         );
-        alert(msgData.message);
+      } else if (msgData.type && msgData.type === "joinRoom") {
+        window.history.replaceState(
+          null,
+          "Joined Room",
+          `/room/${msgData.roomName}`
+        );
       }
     };
 
     return () => {
+      window.history.replaceState(
+        null,
+        "Left room",
+        `/`
+      );
       ws.current?.close();
     };
   }, [url]);
+
   const createRoom = (roomName: string, playerName: string) => {
     const data = { roomName, playerName, type: "createRoom" };
 
@@ -48,12 +53,7 @@ const useWebSocket = (url: string) => {
     }
   };
 
-  const getMsgData = () => {
-    console.log(2, message);
-    return message;
-  };
-
-  return { createRoom, joinRoom, getMsgData };
+  return { createRoom, joinRoom, messageState };
 };
 
 export default useWebSocket;

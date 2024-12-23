@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useWebSocket from "../hooks/useWebSocket";
 interface RoomFormParams {
   isCreateRoom: string;
@@ -11,7 +11,7 @@ const RoomForm = ({ isCreateRoom }: RoomFormParams) => {
   const title = isCreateRoom === "create" ? "Create" : "Join";
 
   //Pass a new param to UseWebSocket that will update the useEffect dependency array
-  const { createRoom, joinRoom, getMsgData } = useWebSocket(
+  const { createRoom, joinRoom, messageState } = useWebSocket(
     "ws://localhost:8080"
   );
 
@@ -24,9 +24,13 @@ const RoomForm = ({ isCreateRoom }: RoomFormParams) => {
     } else {
       joinRoom(roomName, playerName);
     }
-
-    console.log(3, getMsgData());
   };
+
+  useEffect(() => {
+    if (messageState) {
+      console.log("Component Message updated:", messageState);
+    }
+  }, [messageState]);
 
   if (isCreateRoom === "") return <></>;
 
