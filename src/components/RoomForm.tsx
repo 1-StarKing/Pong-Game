@@ -27,6 +27,12 @@ const RoomForm = ({ isCreateRoom }: RoomFormParams) => {
   };
 
   useEffect(() => {
+    /* TODO
+      Create a local state variable and update it with the message state.
+      Check if room name and player name match the one that comes from the message state.
+      If yes, hide the UI.
+      Same for join and create room.
+    */
     if (messageState) {
       console.log("Component Message updated:", messageState);
     }

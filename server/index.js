@@ -1,22 +1,28 @@
 const WebSocket = require("ws");
+const { v4: uuidv4 } = require("uuid"); // Using UUID for unique identifiers
 const wss = new WebSocket.Server({ port: 8080 });
 
 // Object to hold all rooms
 const rooms = {};
 
 wss.on("connection", (ws) => {
+  ws.id = uuidv4(); // Assign a unique ID to each client
+  console.log(`Client connected with ID: ${ws.id}`);
+
   console.log("connected");
   let assignedRoom;
   const roomResponse = {
     message: ``,
-    roomName: '',
-    type: '',
+    roomName: "",
+    type: "",
+    playerName: "",
   };
 
   ws.on("message", (message) => {
     const { type, roomName, playerName } = JSON.parse(message);
     roomResponse.type = type;
     roomResponse.roomName = roomName;
+    roomResponse.playerName = playerName;
     ws.playerName = playerName;
     assignedRoom = roomName.replace(" ", "-");
 
@@ -72,9 +78,17 @@ wss.on("connection", (ws) => {
     } else {
       // TODO check if disconnected player was already in the room and retain it if reconnects
       // Remove the player from the room when they disconnect
-      if (rooms[assignedRoom] && rooms[assignedRoom]["players"].length && rooms[assignedRoom]["sockets"].length) {
-        rooms[assignedRoom]["players"] = rooms[assignedRoom]["players"].filter((player) => player !== ws.playerName);
-        rooms[assignedRoom]["sockets"] = rooms[assignedRoom]["sockets"].filter((client) => client !== ws);
+      if (
+        rooms[assignedRoom] &&
+        rooms[assignedRoom]["players"].length &&
+        rooms[assignedRoom]["sockets"].length
+      ) {
+        rooms[assignedRoom]["players"] = rooms[assignedRoom]["players"].filter(
+          (player) => player !== ws.playerName
+        );
+        rooms[assignedRoom]["sockets"] = rooms[assignedRoom]["sockets"].filter(
+          (client) => client !== ws
+        );
         roomResponse.message = `Player ${ws.playerName} left room ${assignedRoom}`;
         rooms[assignedRoom]["sockets"][0].send(JSON.stringify(roomResponse));
       }
