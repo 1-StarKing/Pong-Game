@@ -1,8 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 
+type MessageType = {
+  message: string;
+  roomName: string;
+  type: "createRoom" | "joinRoom";
+  playerName: string;
+  playerID: string;
+};
+
 const useWebSocket = (url: string) => {
   const ws = useRef<WebSocket | null>(null);
-  const [messageState, setMessageState] = useState(null);
+  const [messageState, setMessageState] = useState<MessageType[]>([]);
 
   useEffect(() => {
     ws.current = new WebSocket(url);
@@ -12,28 +20,31 @@ const useWebSocket = (url: string) => {
       const msgData = JSON.parse(message.data);
       setMessageState(msgData);
 
+      /*
+        TODO: msgdata is now array of players. adjust logic related to msgdata to the new data struct.
+      */
+      console.log(msgData);
+
       // move this to the RoomForm component ???
-      if (msgData.type && msgData.type === "createRoom") {
-        window.history.replaceState(
-          null,
-          "New Room Created",
-          `/room/${msgData.roomName}`
-        );
-      } else if (msgData.type && msgData.type === "joinRoom") {
-        window.history.replaceState(
-          null,
-          "Joined Room",
-          `/room/${msgData.roomName}`
-        );
+      if (msgData.length) {
+        if (msgData[0].type && msgData[0].type === "createRoom") {
+          window.history.replaceState(
+            null,
+            "New Room Created",
+            `/room/${msgData[0].roomName}`
+          );
+        } else if (msgData[1].type && msgData[1].type === "joinRoom") {
+          window.history.replaceState(
+            null,
+            "Joined Room",
+            `/room/${msgData[1].roomName}`
+          );
+        }
       }
     };
 
     return () => {
-      window.history.replaceState(
-        null,
-        "Left room",
-        `/`
-      );
+      window.history.replaceState(null, "Left room", `/`);
       ws.current?.close();
     };
   }, [url]);

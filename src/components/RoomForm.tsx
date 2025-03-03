@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import useWebSocket from "../hooks/useWebSocket";
+import { MyContext } from "../ContextProvider";
+
 interface RoomFormParams {
   isCreateRoom: string;
 }
@@ -7,10 +9,10 @@ interface RoomFormParams {
 const RoomForm = ({ isCreateRoom }: RoomFormParams) => {
   const [roomName, setRoomName] = useState("");
   const [playerName, setPlayerName] = useState("");
+  const { playerConnected, setPlayerConnected } = useContext(MyContext);
 
   const title = isCreateRoom === "create" ? "Create" : "Join";
 
-  //Pass a new param to UseWebSocket that will update the useEffect dependency array
   const { createRoom, joinRoom, messageState } = useWebSocket(
     "ws://localhost:8080"
   );
@@ -27,18 +29,20 @@ const RoomForm = ({ isCreateRoom }: RoomFormParams) => {
   };
 
   useEffect(() => {
-    /* TODO
-      Create a local state variable and update it with the message state.
-      Check if room name and player name match the one that comes from the message state.
-      If yes, hide the UI.
-      Same for join and create room.
-    */
-    if (messageState) {
+    if (messageState.length) {
+      const player = messageState.find((p) => {
+        return p.playerName === playerName;
+      });
+
+      console.log(player);
+
+      if (player?.playerName === playerName && player?.roomName === roomName)
+        setPlayerConnected(true);
       console.log("Component Message updated:", messageState);
     }
   }, [messageState]);
 
-  if (isCreateRoom === "") return <></>;
+  if (isCreateRoom === "" || playerConnected) return <></>;
 
   return (
     <div>

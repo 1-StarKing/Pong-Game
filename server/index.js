@@ -4,6 +4,7 @@ const wss = new WebSocket.Server({ port: 8080 });
 
 // Object to hold all rooms
 const rooms = {};
+let players = [];
 
 wss.on("connection", (ws) => {
   ws.id = uuidv4(); // Assign a unique ID to each client
@@ -16,6 +17,7 @@ wss.on("connection", (ws) => {
     roomName: "",
     type: "",
     playerName: "",
+    playerID: ws.id,
   };
 
   ws.on("message", (message) => {
@@ -38,7 +40,8 @@ wss.on("connection", (ws) => {
         rooms[assignedRoom]["roomName"] = assignedRoom;
         rooms[assignedRoom]["players"] = [playerName];
         roomResponse.message = `Player ${playerName} created room ${assignedRoom}`;
-        ws.send(JSON.stringify(roomResponse));
+        players.push(roomResponse);
+        ws.send(JSON.stringify(players));
       } else {
         roomResponse.message = `Room already exists`;
         ws.send(JSON.stringify(roomResponse));
@@ -54,7 +57,8 @@ wss.on("connection", (ws) => {
         rooms[assignedRoom]["sockets"].push(ws);
         rooms[assignedRoom]["players"].push(playerName);
         roomResponse.message = `Player ${playerName} joined room ${assignedRoom}`;
-        ws.send(JSON.stringify(roomResponse));
+        players.push(roomResponse);
+        ws.send(JSON.stringify(players));
       } else {
         roomResponse.message = `Room already full`;
         ws.send(JSON.stringify(roomResponse));
@@ -72,26 +76,25 @@ wss.on("connection", (ws) => {
   });
 
   ws.on("close", () => {
+    if (
+      rooms[assignedRoom] &&
+      rooms[assignedRoom]["players"].length &&
+      rooms[assignedRoom]["sockets"].length
+    ) {
+      rooms[assignedRoom]["players"] = rooms[assignedRoom]["players"].filter(
+        (player) => player !== ws.playerName
+      );
+      rooms[assignedRoom]["sockets"] = rooms[assignedRoom]["sockets"].filter(
+        (client) => client !== ws
+      );
+      roomResponse.message = `Player ${ws.playerName} left room ${assignedRoom}`;
+      players = players.filter((pl) => pl.playerName !== ws.playerName);
+      rooms[assignedRoom]["sockets"][0]?.send(JSON.stringify(roomResponse));
+    }
+
     // If the room is empty, delete it
     if (rooms[assignedRoom] && rooms[assignedRoom]["sockets"].length === 0) {
       delete rooms[assignedRoom];
-    } else {
-      // TODO check if disconnected player was already in the room and retain it if reconnects
-      // Remove the player from the room when they disconnect
-      if (
-        rooms[assignedRoom] &&
-        rooms[assignedRoom]["players"].length &&
-        rooms[assignedRoom]["sockets"].length
-      ) {
-        rooms[assignedRoom]["players"] = rooms[assignedRoom]["players"].filter(
-          (player) => player !== ws.playerName
-        );
-        rooms[assignedRoom]["sockets"] = rooms[assignedRoom]["sockets"].filter(
-          (client) => client !== ws
-        );
-        roomResponse.message = `Player ${ws.playerName} left room ${assignedRoom}`;
-        rooms[assignedRoom]["sockets"][0].send(JSON.stringify(roomResponse));
-      }
     }
   });
 });
