@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
+import { MyContext } from "../ContextProvider";
 
+/*
 type MessageType = {
   message: string;
   roomName: string;
@@ -7,10 +9,11 @@ type MessageType = {
   playerName: string;
   playerID: string;
 };
+*/
 
 const useWebSocket = (url: string) => {
   const ws = useRef<WebSocket | null>(null);
-  const [messageState, setMessageState] = useState<MessageType[]>([]);
+  const { players, setPlayers } = useContext(MyContext);
 
   useEffect(() => {
     ws.current = new WebSocket(url);
@@ -18,7 +21,7 @@ const useWebSocket = (url: string) => {
     ws.current.onclose = () => console.log("WebSocket disconnected");
     ws.current.onmessage = (message) => {
       const msgData = JSON.parse(message.data);
-      setMessageState(msgData);
+      setPlayers(msgData);
 
       /*
         TODO: msgdata is now array of players. adjust logic related to msgdata to the new data struct.
@@ -64,7 +67,7 @@ const useWebSocket = (url: string) => {
     }
   };
 
-  return { createRoom, joinRoom, messageState };
+  return { createRoom, joinRoom, players };
 };
 
 export default useWebSocket;

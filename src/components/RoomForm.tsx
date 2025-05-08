@@ -13,9 +13,7 @@ const RoomForm = ({ isCreateRoom }: RoomFormParams) => {
 
   const title = isCreateRoom === "create" ? "Create" : "Join";
 
-  const { createRoom, joinRoom, messageState } = useWebSocket(
-    "ws://localhost:8080"
-  );
+  const { createRoom, joinRoom, players } = useWebSocket("ws://localhost:8080");
 
   const handleRoomSubmit = () => {
     if (!roomName || !playerName)
@@ -29,8 +27,8 @@ const RoomForm = ({ isCreateRoom }: RoomFormParams) => {
   };
 
   useEffect(() => {
-    if (messageState.length) {
-      const player = messageState.find((p) => {
+    if (players.length) {
+      const player = players.find((p) => {
         return p.playerName === playerName;
       });
 
@@ -38,9 +36,9 @@ const RoomForm = ({ isCreateRoom }: RoomFormParams) => {
 
       if (player?.playerName === playerName && player?.roomName === roomName)
         setPlayerConnected(true);
-      console.log("Component Message updated:", messageState);
+      console.log("Component Message updated:", players);
     }
-  }, [messageState]);
+  }, [players]);
 
   if (isCreateRoom === "" || playerConnected) return <></>;
 

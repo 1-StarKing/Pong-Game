@@ -1,12 +1,13 @@
-import React from "react";
-//import { useContext } from "react";
-//import { MyContext } from "../ContextProvider";
+import React, { useContext } from "react";
+import { MyContext } from "../ContextProvider";
 
 const LoadingScreen = () => {
-  //const { players } = useContext(MyContext);
-  //console.log(players);
+  const { players } = useContext(MyContext);
+  console.log(players);
 
-  return <div>Waiting for players</div>;
+  if (players.length === 1) return <div>Waiting for players</div>;
+
+  return <></>;
 };
 
 export default LoadingScreen;
