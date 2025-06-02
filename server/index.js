@@ -33,6 +33,8 @@ wss.on("connection", (ws) => {
       return ws.send(JSON.stringify(roomResponse));
     }
 
+    players.push(roomResponse);
+
     if (type === "createRoom") {
       if (!rooms[assignedRoom]) {
         rooms[assignedRoom] = {};
@@ -40,7 +42,7 @@ wss.on("connection", (ws) => {
         rooms[assignedRoom]["roomName"] = assignedRoom;
         rooms[assignedRoom]["players"] = [playerName];
         roomResponse.message = `Player ${playerName} created room ${assignedRoom}`;
-        players.push(roomResponse);
+        // players.push(roomResponse);
         ws.send(JSON.stringify(players));
       } else {
         roomResponse.message = `Room already exists`;
@@ -57,13 +59,15 @@ wss.on("connection", (ws) => {
         rooms[assignedRoom]["sockets"].push(ws);
         rooms[assignedRoom]["players"].push(playerName);
         roomResponse.message = `Player ${playerName} joined room ${assignedRoom}`;
-        players.push(roomResponse);
+        // players.push(roomResponse);
         ws.send(JSON.stringify(players));
       } else {
         roomResponse.message = `Room already full`;
         ws.send(JSON.stringify(roomResponse));
       }
     }
+
+    console.log(players);
 
     // Broadcast to the other player in the same room
     if (rooms[assignedRoom]) {
