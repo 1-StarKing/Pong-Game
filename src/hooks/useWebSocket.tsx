@@ -23,13 +23,6 @@ const useWebSocket = (url: string) => {
       const msgData = JSON.parse(message.data);
       setPlayers(msgData);
 
-      console.log(msgData);
-
-      /*
-        TODO: msgdata is now array of players. adjust logic related to msgdata to the new data struct.
-      */
-      console.log(msgData);
-
       // move this to the RoomForm component ???
       if (msgData.length) {
         if (msgData[0].type && msgData[0].type === "createRoom") {

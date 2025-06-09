@@ -23,8 +23,6 @@ const ThreeScene: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // when player 2 connects player one doesnt know of it, players is not synced properly for player 1
-  console.log(players)
   return (
     <Canvas
       style={{
@@ -40,7 +38,6 @@ const ThreeScene: React.FC = () => {
       <ambientLight />
       <pointLight position={[10, 10, 10]} />
       {players.length && players.map((player, index) => {
-        console.log(index);
         return (
           <Player
             key={index}

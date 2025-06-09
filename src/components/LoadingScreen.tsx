@@ -3,7 +3,7 @@ import { MyContext } from "../ContextProvider";
 
 const LoadingScreen = () => {
   const { players } = useContext(MyContext);
-  console.log(players);
+  // console.log(players);
 
   if (players.length === 1) return <div>Waiting for players</div>;
 

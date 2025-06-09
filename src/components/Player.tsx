@@ -11,6 +11,9 @@ function Player({ color, playerWidth, ...props }: PlayerProps) {
   const meshRef = useRef<THREE.Mesh>(null!);
   const [position, setPosition] = useState(0);
 
+  // update player position individually for each player
+  // send position to server using websocket to update position for both players
+  // server will broadcast the position to all players in the room
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "ArrowUp") {
