@@ -8,19 +8,20 @@ const ThreeScene: React.FC = () => {
   const { players } = useContext(MyContext);
   const [planeWidth, setPlaneWidth] = useState(window.innerWidth / 140);
   const playerWidth = 0.1; // Width of the player
-  const playerColors = ["red", "blue"]; // Array of colors for players
 
   // Calculate the left edge position
   const leftEdgePosition = -planeWidth / 2 + playerWidth / 2 + playerWidth; // Dynamically calculate left edge position
   const rightEdgePosition = planeWidth / 2 - playerWidth / 2 - playerWidth; // Dynamically calculate right edge position
-  const playerPositions = [leftEdgePosition, rightEdgePosition];
+  // const playerPositions = [leftEdgePosition, rightEdgePosition];
 
   useEffect(() => {
     const handleResize = () => {
       setPlaneWidth(window.innerWidth / 140);
     };
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   return (
@@ -37,16 +38,21 @@ const ThreeScene: React.FC = () => {
     >
       <ambientLight />
       <pointLight position={[10, 10, 10]} />
-      {players.length && players.map((player, index) => {
-        return (
-          <Player
-            key={index}
-            position={[playerPositions[index], 10, 0.05]}
-            playerWidth={playerWidth}
-            color={playerColors[index]} // Cycle through colors
-          />
-        )
-      })}
+      {players.length &&
+        players.map((player) => {
+          return (
+            <Player
+              key={player.playerID}
+              position={[
+                player.color === "red" ? leftEdgePosition : rightEdgePosition,
+                player.positionY,
+                0.05,
+              ]}
+              playerWidth={playerWidth}
+              color={player.color} // Cycle through colors
+            />
+          );
+        })}
       <mesh>
         <planeGeometry args={[planeWidth, 7]} />
         <meshStandardMaterial color="orange" />

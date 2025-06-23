@@ -32,11 +32,11 @@ const RoomForm = ({ isCreateRoom }: RoomFormParams) => {
         return p.playerName === playerName;
       });
 
-      console.log(player);
+      // console.log(player);
 
       if (player?.playerName === playerName && player?.roomName === roomName)
         setPlayerConnected(true);
-      console.log("Component Message updated:", players);
+      // console.log("Component Message updated:", players);
     }
   }, [players]);
 

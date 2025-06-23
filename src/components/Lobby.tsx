@@ -9,13 +9,20 @@ const Lobby = ({ updateJoinOrCreateRoom }: LobbyParams) => {
   const { playerConnected } = useContext(MyContext);
   const [joinOrCreateRoom, setJoinOrCreateRoom] = useState("");
   updateJoinOrCreateRoom(joinOrCreateRoom);
+  
+  const createRoom = () => {
+    setJoinOrCreateRoom("create");
+  };
+  const joinRoom = () => {
+    setJoinOrCreateRoom("join");
+  };
 
   if (playerConnected) return <></>;
 
   return (
     <div>
-      <button onClick={() => setJoinOrCreateRoom("create")}>Create Room</button>
-      <button onClick={() => setJoinOrCreateRoom("join")}>Join Room</button>
+      <button onClick={createRoom}>Create Room</button>
+      <button onClick={joinRoom}>Join Room</button>
     </div>
   );
 };

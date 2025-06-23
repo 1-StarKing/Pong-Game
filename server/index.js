@@ -1,5 +1,5 @@
 const WebSocket = require("ws");
-const { v4: uuidv4 } = require("uuid"); // Using UUID for unique identifiers
+const { v4: uuidv4 } = require("uuid");
 const wss = new WebSocket.Server({ port: 8080 });
 
 // Object to hold all rooms
@@ -18,10 +18,13 @@ wss.on("connection", (ws) => {
     type: "",
     playerName: "",
     playerID: ws.id,
+    positionY: 0,
+    positionX: 0,
+    color: "red"
   };
 
   ws.on("message", (message) => {
-    const { type, roomName, playerName } = JSON.parse(message);
+    const { type, roomName, playerName, direction = null } = JSON.parse(message);
     roomResponse.type = type;
     roomResponse.roomName = roomName;
     roomResponse.playerName = playerName;
@@ -57,12 +60,20 @@ wss.on("connection", (ws) => {
         rooms[assignedRoom]["sockets"].push(ws);
         rooms[assignedRoom]["players"].push(playerName);
         roomResponse.message = `Player ${playerName} joined room ${assignedRoom}`;
+        roomResponse.color = "blue"
         players.push(roomResponse);
         ws.send(JSON.stringify(players));
       } else {
         roomResponse.message = `Room already full`;
         ws.send(JSON.stringify(roomResponse));
       }
+    }
+
+    if (type === "move") {
+      const player = players.find((pl) => pl.playerName === playerName);
+      player.positionY = direction === "up" ? player.positionY + 0.1 : player.positionY - 0.1;
+      players = [...players.filter((pl) => pl.playerName !== playerName), player];
+      ws.send(JSON.stringify(players));
     }
 
     // Broadcast to the other player in the same room

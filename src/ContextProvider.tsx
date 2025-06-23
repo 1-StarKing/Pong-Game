@@ -4,12 +4,15 @@ interface App {
   children: ReactElement;
 }
 
-interface Player {
+export interface Player {
   message: string;
   roomName: string;
   type: string;
   playerName: string;
   playerID: string;
+  positionY: number;
+  positionX: number;
+  color: string;
 }
 
 interface Context {
