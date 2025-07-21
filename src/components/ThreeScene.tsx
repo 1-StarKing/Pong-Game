@@ -4,6 +4,11 @@ import { OrbitControls } from "@react-three/drei";
 import { MyContext } from "../ContextProvider";
 import Player from "./Player";
 
+/**************************************************************
+ FIND A WAY TO MAKE PLAYER MOVEMENT SMOOTHER
+ RESTRICT THE PLAYER FROM COMING OUT OF THE PLANE
+**************************************************************/
+
 const ThreeScene: React.FC = () => {
   const { players } = useContext(MyContext);
   const [planeWidth, setPlaneWidth] = useState(window.innerWidth / 140);
