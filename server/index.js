@@ -20,11 +20,17 @@ wss.on("connection", (ws) => {
     playerID: ws.id,
     positionY: 0,
     positionX: 0,
-    color: "red"
+    color: "red",
+    direction: "",
   };
 
   ws.on("message", (message) => {
-    const { type, roomName, playerName, direction = null } = JSON.parse(message);
+    const {
+      type,
+      roomName,
+      playerName,
+      direction = null,
+    } = JSON.parse(message);
     roomResponse.type = type;
     roomResponse.roomName = roomName;
     roomResponse.playerName = playerName;
@@ -60,7 +66,7 @@ wss.on("connection", (ws) => {
         rooms[assignedRoom]["sockets"].push(ws);
         rooms[assignedRoom]["players"].push(playerName);
         roomResponse.message = `Player ${playerName} joined room ${assignedRoom}`;
-        roomResponse.color = "blue"
+        roomResponse.color = "blue";
         players.push(roomResponse);
         ws.send(JSON.stringify(players));
       } else {
@@ -71,8 +77,13 @@ wss.on("connection", (ws) => {
 
     if (type === "move") {
       const player = players.find((pl) => pl.playerName === playerName);
-      player.positionY = direction === "up" ? player.positionY + 0.1 : player.positionY - 0.1;
-      players = [...players.filter((pl) => pl.playerName !== playerName), player];
+      player.positionY =
+        direction === "up" ? player.positionY + 0.1 : player.positionY - 0.1;
+      player.direction = direction;
+      players = [
+        ...players.filter((pl) => pl.playerName !== playerName),
+        player,
+      ];
       ws.send(JSON.stringify(players));
     }
 

@@ -66,6 +66,7 @@ const ThreeScene: React.FC = () => {
                 topEdgePosition,
                 bottomEdgePosition,
               ]} // Pass the edge positions
+              direction={player.direction}
             />
           );
         })}
