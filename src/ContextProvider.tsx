@@ -13,6 +13,7 @@ export interface Player {
   positionY: number;
   positionX: number;
   color: string;
+  direction: string;
 }
 
 interface Context {
