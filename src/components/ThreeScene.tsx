@@ -19,16 +19,10 @@ const ThreeScene: React.FC = () => {
   const { players } = useContext(MyContext);
   //const [planeWidth, setPlaneWidth] = useState(window.innerWidth / 140);
 
-  console.log(PLANE_WIDTH);
-
   // Calculate the left and right edge positions
   const leftEdgePosition = -PLANE_WIDTH / 2 + PLAYER_WIDTH / 2 + PLAYER_WIDTH; // Dynamically calculate left edge position
   const rightEdgePosition = PLANE_WIDTH / 2 - PLAYER_WIDTH / 2 - PLAYER_WIDTH; // Dynamically calculate right edge position
 
-  // Calculate the top and bottom edge positions
-  const topEdgePosition = PLANE_HEIGHT / 2 - PLAYER_HEIGHT / 2 - PLAYER_HEIGHT; // Dynamically calculate top edge position
-  const bottomEdgePosition =
-    -PLANE_HEIGHT / 2 + PLAYER_HEIGHT / 2 + PLAYER_HEIGHT; // Dynamically calculate bottom edge position
 
   // useEffect(() => {
   //   const handleResize = () => {
@@ -65,13 +59,8 @@ const ThreeScene: React.FC = () => {
                 0.05,
               ]}
               playerWidth={PLAYER_WIDTH}
+              playerHeight={PLAYER_HEIGHT}
               color={player.color} // Cycle through colors
-              planeEdges={[
-                leftEdgePosition,
-                rightEdgePosition,
-                topEdgePosition,
-                bottomEdgePosition,
-              ]} // Pass the edge positions
               direction={player.direction}
             />
           );
