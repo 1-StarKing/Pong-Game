@@ -1,8 +1,14 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { MyContext } from "../ContextProvider";
 import Player from "./Player";
+import {
+  PLAYER_HEIGHT,
+  PLAYER_WIDTH,
+  PLANE_HEIGHT,
+  PLANE_WIDTH,
+} from "../const";
 
 /**************************************************************
  FIND A WAY TO MAKE PLAYER MOVEMENT SMOOTHER
@@ -11,28 +17,28 @@ import Player from "./Player";
 
 const ThreeScene: React.FC = () => {
   const { players } = useContext(MyContext);
-  const [planeWidth, setPlaneWidth] = useState(window.innerWidth / 140);
-  const playerWidth = 0.1; // Width of the player
-  const planeHeight = 7; // Height of the plane (from your planeGeometry)
-  const playerHeight = 0.1; // Height of the player (you may need to adjust this based on your Player component)
+  //const [planeWidth, setPlaneWidth] = useState(window.innerWidth / 140);
+
+  console.log(PLANE_WIDTH);
 
   // Calculate the left and right edge positions
-  const leftEdgePosition = -planeWidth / 2 + playerWidth / 2 + playerWidth; // Dynamically calculate left edge position
-  const rightEdgePosition = planeWidth / 2 - playerWidth / 2 - playerWidth; // Dynamically calculate right edge position
+  const leftEdgePosition = -PLANE_WIDTH / 2 + PLAYER_WIDTH / 2 + PLAYER_WIDTH; // Dynamically calculate left edge position
+  const rightEdgePosition = PLANE_WIDTH / 2 - PLAYER_WIDTH / 2 - PLAYER_WIDTH; // Dynamically calculate right edge position
 
   // Calculate the top and bottom edge positions
-  const topEdgePosition = planeHeight / 2 - playerHeight / 2 - playerHeight; // Dynamically calculate top edge position
-  const bottomEdgePosition = -planeHeight / 2 + playerHeight / 2 + playerHeight; // Dynamically calculate bottom edge position
+  const topEdgePosition = PLANE_HEIGHT / 2 - PLAYER_HEIGHT / 2 - PLAYER_HEIGHT; // Dynamically calculate top edge position
+  const bottomEdgePosition =
+    -PLANE_HEIGHT / 2 + PLAYER_HEIGHT / 2 + PLAYER_HEIGHT; // Dynamically calculate bottom edge position
 
-  useEffect(() => {
-    const handleResize = () => {
-      setPlaneWidth(window.innerWidth / 140);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     setPlaneWidth(window.innerWidth / 140);
+  //   };
+  //   window.addEventListener("resize", handleResize);
+  //   return () => {
+  //     window.removeEventListener("resize", handleResize);
+  //   };
+  // }, []);
 
   return (
     <Canvas
@@ -58,7 +64,7 @@ const ThreeScene: React.FC = () => {
                 player.positionY,
                 0.05,
               ]}
-              playerWidth={playerWidth}
+              playerWidth={PLAYER_WIDTH}
               color={player.color} // Cycle through colors
               planeEdges={[
                 leftEdgePosition,
@@ -71,7 +77,7 @@ const ThreeScene: React.FC = () => {
           );
         })}
       <mesh>
-        <planeGeometry args={[planeWidth, planeHeight]} />
+        <planeGeometry args={[PLANE_WIDTH, PLANE_HEIGHT]} />
         <meshStandardMaterial color="orange" />
       </mesh>
       <OrbitControls />

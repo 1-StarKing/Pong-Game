@@ -1,6 +1,12 @@
 const WebSocket = require("ws");
 const { v4: uuidv4 } = require("uuid");
 const wss = new WebSocket.Server({ port: 8080 });
+const {
+  PLAYER_HEIGHT,
+  PLAYER_WIDTH,
+  PLANE_HEIGHT,
+  PLANE_WIDTH,
+} = require("../src/const");
 
 // Object to hold all rooms
 const rooms = {};
@@ -75,10 +81,26 @@ wss.on("connection", (ws) => {
       }
     }
 
+    //  WORK WITH AI TO FIGURE OUT CORRECT EQUATION FOR WHEN PLAYER HAS REACHED PLANE EDGE.
+    //    MOVE LOGIC FOR PLAYER POSITION FROM PLAYER COMPONENT TO HERE
+    //    APPLY THE LOGIC TO THE PLAYER POSITION
+
+    const leftEdgePosition = -PLANE_WIDTH / 2 + PLAYER_WIDTH / 2 + PLAYER_WIDTH; // Dynamically calculate left edge position
+    const rightEdgePosition = PLANE_WIDTH / 2 - PLAYER_WIDTH / 2 - PLAYER_WIDTH; // Dynamically calculate right edge position
+
+    console.log(PLAYER_HEIGHT);
+
+    // Calculate the top and bottom edge positions
+    const topEdgePosition =
+      PLANE_HEIGHT / 2 - PLAYER_HEIGHT / 2 - PLAYER_HEIGHT; // Dynamically calculate top edge position
+    const bottomEdgePosition =
+      -PLANE_HEIGHT / 2 + PLAYER_HEIGHT / 2 + PLAYER_HEIGHT; // Dynamically calculate bottom edge position
+
     if (type === "move") {
       const player = players.find((pl) => pl.playerName === playerName);
       player.positionY =
         direction === "up" ? player.positionY + 0.1 : player.positionY - 0.1;
+      console.log(player.positionY);
       player.direction = direction;
       players = [
         ...players.filter((pl) => pl.playerName !== playerName),
