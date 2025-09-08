@@ -12,7 +12,6 @@ import {
 
 /**************************************************************
  FIND A WAY TO MAKE PLAYER MOVEMENT SMOOTHER
- RESTRICT THE PLAYER FROM COMING OUT OF THE PLANE
 **************************************************************/
 
 const ThreeScene: React.FC = () => {
