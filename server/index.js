@@ -9,6 +9,7 @@ const {
 // Object to hold all rooms
 const rooms = {};
 let players = [];
+const playerThrottles = new Map(); // Throttle movement updates per player
 
 wss.on("connection", (ws) => {
   ws.id = uuidv4(); // Assign a unique ID to each client
@@ -85,12 +86,20 @@ wss.on("connection", (ws) => {
 
     if (type === "move") {
       const player = players.find((pl) => pl.playerName === playerName);
+      if (!player) return;
+
+      // Higher frequency updates for more responsive movement
+      const now = Date.now();
+      const lastUpdate = playerThrottles.get(playerName) || 0;
+      if (now - lastUpdate < 16) return; // Back to ~60 FPS for responsiveness
+      playerThrottles.set(playerName, now);
+
       if (direction === "up") {
-        const nextPos = player.positionY + 0.1;
+        const nextPos = player.positionY + 0.35; // Larger increments for immediate response
         player.positionY =
           nextPos > topEdgePosition ? topEdgePosition : nextPos;
       } else if (direction === "down") {
-        const nextPos = player.positionY - 0.1;
+        const nextPos = player.positionY - 0.35; // Larger increments for immediate response
         player.positionY =
           nextPos < bottomEdgePosition ? bottomEdgePosition : nextPos;
       }
@@ -126,6 +135,10 @@ wss.on("connection", (ws) => {
       );
       roomResponse.message = `Player ${ws.playerName} left room ${assignedRoom}`;
       players = players.filter((pl) => pl.playerName !== ws.playerName);
+      
+      // Clean up throttle data
+      playerThrottles.delete(ws.playerName);
+      
       rooms[assignedRoom]["sockets"][0]?.send(JSON.stringify(roomResponse));
     }
 

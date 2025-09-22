@@ -39,31 +39,58 @@ const useWebSocket = (url: string) => {
   }, [url]);
 
   useEffect(() => {
+    const keysPressed = new Set<string>();
+    let animationFrame: number;
+
     const handleKeyDown = (event: KeyboardEvent) => {
-      // gets playerName from each players browser, not working on the same browser
-      // this is because localStorage is not shared between different browser tabs or windows
-      const playerName = localStorage.getItem("playerName");
-      if (!playerName) return; // Only act if you know your ID
-
-      let direction: "up" | "down" | null = null;
-      if (event.key === "ArrowUp") direction = "up";
-      if (event.key === "ArrowDown") direction = "down";
-      if (!direction) return;
-
-      // Send move command to server
-      ws.current?.send(
-        JSON.stringify({
-          type: "move",
-          roomName: players[0]?.roomName, // Assuming roomName is the same for all players
-          playerName: playerName,
-          direction,
-        })
-      );
+      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        keysPressed.add(event.key);
+      }
     };
+
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        keysPressed.delete(event.key);
+      }
+    };
+
+    const sendMovementCommands = () => {
+      const playerName = localStorage.getItem("playerName");
+      if (!playerName || keysPressed.size === 0) {
+        animationFrame = requestAnimationFrame(sendMovementCommands);
+        return;
+      }
+
+      keysPressed.forEach((key) => {
+        let direction: "up" | "down" | null = null;
+        if (key === "ArrowUp") direction = "up";
+        if (key === "ArrowDown") direction = "down";
+        
+        if (direction) {
+          ws.current?.send(
+            JSON.stringify({
+              type: "move",
+              roomName: players[0]?.roomName,
+              playerName: playerName,
+              direction,
+            })
+          );
+        }
+      });
+
+      animationFrame = requestAnimationFrame(sendMovementCommands);
+    };
+
     window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    
+    // Start the movement loop
+    sendMovementCommands();
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      cancelAnimationFrame(animationFrame);
     };
   }, [players]);
 

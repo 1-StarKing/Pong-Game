@@ -57,6 +57,7 @@ const ThreeScene: React.FC = () => {
                 player.positionY,
                 0.05,
               ]}
+              targetY={player.positionY}
               playerWidth={PLAYER_WIDTH}
               playerHeight={PLAYER_HEIGHT}
               color={player.color} // Cycle through colors
