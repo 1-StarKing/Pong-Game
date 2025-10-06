@@ -3,6 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { MyContext } from "../ContextProvider";
 import Player from "./Player";
+import Ball from "./Ball";
 import {
   PLAYER_HEIGHT,
   PLAYER_WIDTH,
@@ -69,6 +70,7 @@ const ThreeScene: React.FC = () => {
         <planeGeometry args={[PLANE_WIDTH, PLANE_HEIGHT]} />
         <meshStandardMaterial color="orange" />
       </mesh>
+      <Ball />
       <OrbitControls />
     </Canvas>
   );
